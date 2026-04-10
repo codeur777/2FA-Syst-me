@@ -1,0 +1,13 @@
+# ============================================================
+# Copier ce fichier en application-local.properties
+# et remplir avec vos propres valeurs
+# ============================================================
+
+# SMTP Gmail
+# Créer une clé d'application sur : https://myaccount.google.com/apppasswords
+spring.mail.username=VOTRE_EMAIL@gmail.com
+spring.mail.password=VOTRE_APP_PASSWORD_GMAIL
+
+# JWT Secret (min. 256 bits encodé en Base64)
+# Générer avec : openssl rand -base64 32
+app.jwt.secret=VOTRE_JWT_SECRET_BASE64
