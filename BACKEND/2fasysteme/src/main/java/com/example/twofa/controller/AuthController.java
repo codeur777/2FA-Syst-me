@@ -31,8 +31,13 @@ public class AuthController {
         return ResponseEntity.ok(authService.verifyTwoFactor(request));
     }
 
-    @PostMapping("/forgot-password")
-    public ResponseEntity<Map<String, String>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+    @PostMapping("/resend-otp")
+    public ResponseEntity<Map<String, String>> resendOtp(@RequestBody Map<String, String> body) {
+        authService.resendOtp(body.get("email"));
+        return ResponseEntity.ok(Map.of("message", "Code renvoyé."));
+    }
+
+    @PostMapping("/forgot-password")    public ResponseEntity<Map<String, String>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
         authService.forgotPassword(request);
         return ResponseEntity.ok(Map.of("message", "Si cet email existe, un code a été envoyé."));
     }

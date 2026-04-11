@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/api_client.dart';
 import '../providers/auth_provider.dart';
+import 'profile_screen.dart';
 
 class Verify2FAScreen extends StatefulWidget {
   final String email;
@@ -41,6 +42,11 @@ class _Verify2FAScreenState extends State<Verify2FAScreen> {
       final auth = context.read<AuthProvider>();
       await auth.saveTokens(data['accessToken'], data['refreshToken']);
       await auth.loadProfile();
+      if (!mounted) return;
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const ProfileScreen()),
+        (route) => false,
+      );
     } on ApiException catch (e) {
       setState(() {
         _error = e.message;
@@ -49,6 +55,15 @@ class _Verify2FAScreenState extends State<Verify2FAScreen> {
       _focusNodes[0].requestFocus();
     } finally {
       if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _resendCode() async {
+    _startCooldown();
+    try {
+      await ApiClient.post('/auth/resend-otp', {'email': widget.email});
+    } on ApiException catch (e) {
+      if (mounted) setState(() => _error = e.message);
     }
   }
 
@@ -128,10 +143,7 @@ class _Verify2FAScreenState extends State<Verify2FAScreen> {
                   const SizedBox(height: 16),
 
                   TextButton(
-                    onPressed: _resendCooldown > 0 ? null : () {
-                      _startCooldown();
-                      // Le renvoi se fait via un nouveau login
-                    },
+                    onPressed: _resendCooldown > 0 ? null : _resendCode,
                     child: Text(_resendCooldown > 0 ? 'Renvoyer (${_resendCooldown}s)' : 'Renvoyer le code'),
                   ),
                 ],

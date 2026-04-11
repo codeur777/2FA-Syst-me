@@ -76,7 +76,12 @@ export default function Verify2FAPage() {
 
   const handleResend = async () => {
     if (resendCooldown > 0) return;
-    setResendCooldown(60);
+    try {
+      await api.post('/auth/resend-otp', { email });
+      setResendCooldown(60);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Erreur lors du renvoi');
+    }
   };
 
   return (

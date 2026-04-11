@@ -34,6 +34,7 @@ public class AuthService {
                 .lastName(request.getLastName())
                 .phone(request.getPhone())
                 .twoFactorEnabled(true)
+                .enabled(false)
                 .build();
 
         userRepository.save(user);
@@ -76,6 +77,14 @@ public class AuthService {
         boolean valid = otpService.verify(request.getEmail(), request.getCode(), OtpToken.OtpType.TWO_FACTOR);
         if (!valid) throw new IllegalArgumentException("Code invalide ou expiré");
 
+        // Activer le compte si ce n'est pas encore fait (première connexion après inscription)
+        userRepository.findByEmail(request.getEmail()).ifPresent(user -> {
+            if (!user.isEnabled()) {
+                user.setEnabled(true);
+                userRepository.save(user);
+            }
+        });
+
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
         return AuthResponse.builder()
                 .accessToken(jwtService.generateToken(userDetails))
@@ -83,6 +92,12 @@ public class AuthService {
                 .twoFactorRequired(false)
                 .email(request.getEmail())
                 .build();
+    }
+
+    public void resendOtp(String email) {
+        userRepository.findByEmail(email).ifPresent(user ->
+                otpService.generateAndSend(user.getEmail(), OtpToken.OtpType.TWO_FACTOR)
+        );
     }
 
     public void forgotPassword(ForgotPasswordRequest request) {

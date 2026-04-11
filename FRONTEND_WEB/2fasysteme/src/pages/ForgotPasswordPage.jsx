@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axiosInstance';
+import Alert from '../components/Alert';
 import '../styles/auth.css';
 
 export default function ForgotPasswordPage() {
@@ -55,8 +56,8 @@ export default function ForgotPasswordPage() {
         <div className="auth-logo">🔑</div>
         <h1 className="auth-title">Mot de passe oublié</h1>
 
-        {message && <div className="alert alert-success">{message}</div>}
-        {error && <div className="alert alert-error">{error}</div>}
+        {message && <Alert message={message} type="success" duration={8000} />}
+        {error && <Alert message={error} type="error" duration={6000} />}
 
         {step === 1 ? (
           <form onSubmit={handleSendCode} className="auth-form">

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axiosInstance';
 import { useTheme } from '../context/ThemeContext';
+import Alert from '../components/Alert';
 import '../styles/profile.css';
 
 const FAQ_ITEMS = [
@@ -53,7 +54,6 @@ export default function ProfilePage() {
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
-    setTimeout(() => setMessage({ type: '', text: '' }), 4000);
   };
 
   const handleProfileSave = async (e) => {
@@ -159,7 +159,7 @@ export default function ProfilePage() {
 
       <main className="profile-content">
         {message.text && (
-          <div className={`alert alert-${message.type}`}>{message.text}</div>
+          <Alert message={message.text} type={message.type} duration={6000} />
         )}
 
         {/* ── PROFIL ── */}
