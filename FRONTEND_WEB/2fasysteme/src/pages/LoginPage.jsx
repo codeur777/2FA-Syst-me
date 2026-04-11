@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axiosInstance';
 import { useAuth } from '../context/AuthContext';
+import Alert from '../components/Alert';
 import '../styles/auth.css';
 
 export default function LoginPage() {
@@ -43,7 +44,7 @@ export default function LoginPage() {
         <h1 className="auth-title">Connexion</h1>
         <p className="auth-subtitle">Bienvenue sur 2FA Systeme</p>
 
-        {error && <div className="alert alert-error">{error}</div>}
+        {error && <Alert message={error} type="error" duration={6000} />}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">

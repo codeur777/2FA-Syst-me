@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../api/axiosInstance';
 import { useAuth } from '../context/AuthContext';
+import Alert from '../components/Alert';
 import '../styles/auth.css';
 
 export default function Verify2FAPage() {
@@ -87,7 +88,7 @@ export default function Verify2FAPage() {
           Code envoyé à <strong>{email}</strong>
         </p>
 
-        {error && <div className="alert alert-error">{error}</div>}
+        {error && <Alert message={error} type="error" duration={6000} />}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="otp-inputs" onPaste={handlePaste}>
