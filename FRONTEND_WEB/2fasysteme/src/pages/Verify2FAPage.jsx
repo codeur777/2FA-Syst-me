@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../api/axiosInstance';
+import { useAuth } from '../context/AuthContext';
 import '../styles/auth.css';
 
 export default function Verify2FAPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { login } = useAuth();
   const email = location.state?.email;
   const [digits, setDigits] = useState(['', '', '', '', '', '']);
   const [error, setError] = useState('');
@@ -55,8 +57,12 @@ export default function Verify2FAPage() {
     setLoading(true);
     try {
       const { data } = await api.post('/auth/verify-2fa', { email, code });
+      // Stocker les tokens d'abord
       localStorage.setItem('accessToken', data.accessToken);
       localStorage.setItem('refreshToken', data.refreshToken);
+      // Charger le profil et mettre à jour le contexte
+      const profileRes = await api.get('/user/profile');
+      login({ accessToken: data.accessToken, refreshToken: data.refreshToken }, profileRes.data);
       navigate('/profile');
     } catch (err) {
       setError(err.response?.data?.error || 'Code invalide');
@@ -69,12 +75,7 @@ export default function Verify2FAPage() {
 
   const handleResend = async () => {
     if (resendCooldown > 0) return;
-    try {
-      await api.post('/auth/login', { email, password: '' }).catch(() => {});
-      setResendCooldown(60);
-    } catch {
-      setResendCooldown(60);
-    }
+    setResendCooldown(60);
   };
 
   return (

@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axiosInstance';
+import { useAuth } from '../context/AuthContext';
 import '../styles/auth.css';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -20,8 +22,11 @@ export default function LoginPage() {
       if (data.twoFactorRequired) {
         navigate('/verify-2fa', { state: { email: data.email } });
       } else {
+        // Sans 2FA : charger le profil et mettre à jour le contexte
         localStorage.setItem('accessToken', data.accessToken);
         localStorage.setItem('refreshToken', data.refreshToken);
+        const profileRes = await api.get('/user/profile');
+        login({ accessToken: data.accessToken, refreshToken: data.refreshToken }, profileRes.data);
         navigate('/profile');
       }
     } catch (err) {
