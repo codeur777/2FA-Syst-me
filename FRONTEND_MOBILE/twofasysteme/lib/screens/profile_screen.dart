@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/api_client.dart';
 import '../providers/auth_provider.dart';
-import 'login_screen.dart';
 
 const _faqItems = [
   ('Qu\'est-ce que la 2FA ?', 'La 2FA ajoute une couche de sécurité. Un code est envoyé à votre email à chaque connexion.'),
@@ -47,15 +46,6 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
             icon: Icon(auth.themeMode == ThemeMode.dark ? Icons.light_mode : Icons.dark_mode),
             onPressed: auth.toggleTheme,
             tooltip: 'Changer le thème',
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await auth.logout();
-              if (!context.mounted) return;
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
-            },
-            tooltip: 'Déconnexion',
           ),
         ],
         bottom: TabBar(
@@ -184,6 +174,34 @@ class _ProfileTabState extends State<_ProfileTab> {
             style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
             child: _loading ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Text('Sauvegarder'),
           ),
+          const SizedBox(height: 32),
+          const Divider(),
+          const SizedBox(height: 16),
+          OutlinedButton.icon(
+            onPressed: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Déconnexion'),
+                  content: const Text('Voulez-vous vraiment vous déconnecter ?'),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
+                    FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Déconnecter')),
+                  ],
+                ),
+              );
+              if (confirm == true && context.mounted) {
+                await context.read<AuthProvider>().logout();
+              }
+            },
+            icon: const Icon(Icons.logout, color: Colors.red),
+            label: const Text('Se déconnecter', style: TextStyle(color: Colors.red, fontSize: 16)),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              side: const BorderSide(color: Colors.red),
+            ),
+          ),
+          const SizedBox(height: 16),
         ],
       ),
     );

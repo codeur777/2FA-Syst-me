@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 public class RegisterRequest {
-    @NotBlank @Email
+    @NotBlank @Email(message = "L'adresse email n'est pas valide")
     private String email;
 
     @NotBlank @Size(min = 8, message = "Le mot de passe doit contenir au moins 8 caractères")

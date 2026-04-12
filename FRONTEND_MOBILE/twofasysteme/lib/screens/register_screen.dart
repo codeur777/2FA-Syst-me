@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import '../core/api_client.dart';
 import 'verify_2fa_screen.dart';
 import 'login_screen.dart';
@@ -18,6 +19,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _phoneCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
+  String _phoneE164 = '';
   bool _loading = false;
   bool _obscure = true;
   String? _error;
@@ -43,7 +45,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'password': _passwordCtrl.text,
         'firstName': _firstNameCtrl.text.trim(),
         'lastName': _lastNameCtrl.text.trim(),
-        'phone': _phoneCtrl.text.trim(),
+        'phone': _phoneE164,
       });
       if (!mounted) return;
       Navigator.pushReplacement(context, MaterialPageRoute(
@@ -51,6 +53,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ));
     } on ApiException catch (e) {
       setState(() => _error = e.message);
+    } catch (e) {
+      setState(() => _error = 'Erreur : ${e.toString()}');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -109,10 +113,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    TextFormField(
+                    IntlPhoneField(
                       controller: _phoneCtrl,
-                      keyboardType: TextInputType.phone,
-                      decoration: const InputDecoration(labelText: 'Téléphone (optionnel)', prefixIcon: Icon(Icons.phone_outlined)),
+                      initialCountryCode: 'FR',
+                      decoration: const InputDecoration(
+                        labelText: 'Téléphone (optionnel)',
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (phone) {
+                        _phoneE164 = phone.completeNumber;
+                      },
+                      onSaved: (_) {},
+                      disableLengthCheck: false,
                     ),
                     const SizedBox(height: 16),
 

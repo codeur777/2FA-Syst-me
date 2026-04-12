@@ -26,6 +26,10 @@ public class AuthService {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà utilisé");
         }
+        if (request.getPhone() != null && !request.getPhone().isBlank()
+                && userRepository.existsByPhone(request.getPhone())) {
+            throw new IllegalArgumentException("Ce numéro de téléphone est déjà utilisé");
+        }
 
         User user = User.builder()
                 .email(request.getEmail())

@@ -21,8 +21,8 @@ export default function ForgotPasswordPage() {
       await api.post('/auth/forgot-password', { email });
       setMessage('Si cet email existe, un code a été envoyé.');
       setStep(2);
-    } catch {
-      setError('Une erreur est survenue');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Une erreur est survenue');
     } finally {
       setLoading(false);
     }

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 import api from '../api/axiosInstance';
 import Alert from '../components/Alert';
 import '../styles/auth.css';
@@ -10,6 +12,7 @@ export default function RegisterPage() {
     email: '', password: '', confirmPassword: '',
     firstName: '', lastName: '', phone: ''
   });
+  const [phoneValue, setPhoneValue] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState('');
@@ -41,7 +44,7 @@ export default function RegisterPage() {
         password: form.password,
         firstName: form.firstName,
         lastName: form.lastName,
-        phone: form.phone,
+        phone: phoneValue ? `+${phoneValue}` : '',
       });
       navigate('/verify-2fa', { state: { email: data.email, fromRegister: true } });
     } catch (err) {
@@ -107,14 +110,17 @@ export default function RegisterPage() {
             </div>
             <div className="form-group">
               <label htmlFor="phone">Téléphone <span className="optional">(optionnel)</span></label>
-              <div className="input-wrapper">
-                <span className="input-icon">📱</span>
-                <input
-                  id="phone" type="tel" name="phone"
-                  value={form.phone} onChange={handleChange}
-                  placeholder="+33 6 00 00 00 00"
-                />
-              </div>
+              <PhoneInput
+                country={'fr'}
+                value={phoneValue}
+                onChange={setPhoneValue}
+                inputProps={{ id: 'phone', name: 'phone' }}
+                enableSearch
+                searchPlaceholder="Rechercher un pays..."
+                specialLabel=""
+                containerStyle={{ width: '100%' }}
+                inputStyle={{ width: '100%', height: '42px', fontSize: '14px' }}
+              />
             </div>
           </div>
 

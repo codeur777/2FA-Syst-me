@@ -48,6 +48,8 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } on ApiException catch (e) {
       setState(() => _error = e.message);
+    } catch (e) {
+      setState(() => _error = 'Erreur de connexion : ${e.toString()}');
     } finally {
       if (mounted) setState(() => _loading = false);
     }

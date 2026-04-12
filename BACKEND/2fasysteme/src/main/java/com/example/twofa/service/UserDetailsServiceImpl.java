@@ -17,6 +17,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .map(user -> User.builder()
                         .username(user.getEmail())
                         .password(user.getPassword())
+                        .disabled(!user.isEnabled())
                         .roles("USER")
                         .build())
                 .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé : " + email));
